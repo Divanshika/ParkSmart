@@ -8,6 +8,8 @@ public abstract class Vehicle {
 
     // TODO: add the private fields a vehicle needs.
 
+    //sample
+
     /**
      * Creates a vehicle.
      * Rules: plate number and owner name cannot be empty -> throw IllegalArgumentException.
