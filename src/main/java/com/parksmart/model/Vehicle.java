@@ -8,7 +8,6 @@ public abstract class Vehicle {
 
     // TODO: add the private fields a vehicle needs.
 
-    //sample
 
     /**
      * Creates a vehicle.
