@@ -37,7 +37,6 @@ Built by Divanshika & Divanshana as an Object-Oriented Programming project.
 | Abstraction | Vehicle is an abstract class that defines common vehicle behaviour and abstract methods |
 | Polymorphism | Car, Bike and Van override methods to provide their own vehicle details, parking rates and fee calculations|
 
-[Add your UML class diagram image here.]
 
 ## Tech stack
 
