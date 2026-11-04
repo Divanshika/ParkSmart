@@ -190,6 +190,10 @@ public class ParkingLot {
         Duration duration = Duration.between(entryTime, exitTime);
 
         long seconds = duration.getSeconds();
+
+        if (duration.getNano() > 0) {
+            seconds++;
+        }
         long hours = (seconds + 3599) / 3600;
         return Math.max(1, hours);
     }

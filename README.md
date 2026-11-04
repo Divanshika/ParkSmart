@@ -8,26 +8,34 @@ Built by Divanshika & Divanshana as an Object-Oriented Programming project.
 
 ## Screenshots
 
-[Add 2–3 screenshots of your running app here. Example:]
-`![Park vehicle screen](screenshots/park.png)`
-
+![img.png](img.png)
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+![img_3.png](img_3.png)
+![img_4.png](img_4.png)
 ## Features
 
-- Park cars, bikes and vans in the smallest free slot that fits
-- Issue tickets (T1001, T1002, …) and find a ticket by plate number
-- Calculate fees per vehicle type (hours rounded up, van service charge)
-- Live dashboard: total slots, free slots, parked vehicles, earnings
-- Payment history, newest first
-- [Export history to CSV – only if you did the bonus task]
+- Park cars, bikes and vans.
+- Automatically assign the smallest suitable available parking slot.
+- Generate unique parking tickets.
+- Find active tickets using vehicle plate numbers.
+- Calculate parking fees based on vehicle type and parking duration.
+- Apply the additional service charge for vans.
+- Round parking duration up to the next full hour.
+- Display parking slot availability.
+- Maintain active and completed parking tickets.
+- Display payment history with the newest transactions first.
+- Calculate total parking earnings.
+- Handle invalid operations using custom exceptions.
 
 ## OOP design
 
 | Principle | Where I used it |
 | --- | --- |
-| Encapsulation | [your answer] |
-| Inheritance | [your answer] |
-| Abstraction | [your answer] |
-| Polymorphism | [your answer] |
+| Encapsulation | Private attributes are used in Vehicle, ParkingSlot, Ticket and ParkingLot. Public getter methods provide controlled access|
+| Inheritance | Car, Bike and Van inherit common attributes and methods from the Vehicle parent class |
+| Abstraction | Vehicle is an abstract class that defines common vehicle behaviour and abstract methods |
+| Polymorphism | Car, Bike and Van override methods to provide their own vehicle details, parking rates and fee calculations|
 
 [Add your UML class diagram image here.]
 
@@ -45,8 +53,13 @@ Java 17 · Swing (FlatLaf theme) · Maven · JUnit 5 · Git and GitHub
 
 Run all tests with **right-click `src/test/java` → Run 'All Tests'**, or `mvn test`.
 
-[Write how many tests you have and one line on what your own 3 tests check.]
+[Write how many tests you have and one line on what your own 3 tests check.]The project includes 20 provided JUnit tests and 3 additional tests written in MyOwnTests.java.
 
+The additional tests check:
+- Rejection of an empty vehicle owner name.
+- Rejection of a null vehicle.
+- Rejection of a null vehicle entry time.
 ## What I learned
 
-[2–3 sentences in your own words.]
+Through this project, I learned how to apply object-oriented programming concepts in a Java application. I practised using inheritance, encapsulation, abstraction and polymorphism while developing a parking management system. I also learned how to handle exceptions, use Java collections 
+and test application functionality using JUnit 5.
