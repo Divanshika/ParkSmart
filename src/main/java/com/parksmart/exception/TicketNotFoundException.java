@@ -4,7 +4,6 @@ package com.parksmart.exception;
 public class TicketNotFoundException extends ParkingException {
 
     public TicketNotFoundException(String message) {
-        // TODO: pass the message to the parent class
-        super(null);
+        super(message);
     }
 }

@@ -7,6 +7,6 @@ package com.parksmart.exception;
 public class ParkingException extends Exception {
 
     public ParkingException(String message) {
-        // TODO: pass the message to the parent class
+        super(message);
     }
 }
