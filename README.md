@@ -53,7 +53,7 @@ Java 17 · Swing (FlatLaf theme) · Maven · JUnit 5 · Git and GitHub
 
 Run all tests with **right-click `src/test/java` → Run 'All Tests'**, or `mvn test`.
 
-[Write how many tests you have and one line on what your own 3 tests check.]The project includes 20 provided JUnit tests and 3 additional tests written in MyOwnTests.java.
+The project includes 20 provided JUnit tests and 3 additional tests written in MyOwnTests.java.
 
 The additional tests check:
 - Rejection of an empty vehicle owner name.
