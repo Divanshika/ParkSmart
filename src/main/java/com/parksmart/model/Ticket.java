@@ -5,48 +5,68 @@ import java.time.LocalDateTime;
 /** A parking ticket. It is "active" until the vehicle leaves. */
 public class Ticket {
 
-    // TODO: add the private fields a ticket needs.
+    private String ticketId;
+    private Vehicle vehicle;
+    private ParkingSlot slot;
+    private LocalDateTime entryTime;
+    private LocalDateTime exitTime;
+    private double fee;
+
 
     public Ticket(String ticketId, Vehicle vehicle, ParkingSlot slot, LocalDateTime entryTime) {
-        // TODO: write this constructor
+        if (ticketId == null || ticketId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Ticket ID cannot be empty.");
+        }
+
+        if (vehicle == null) {
+            throw new IllegalArgumentException("Vehicle cannot be null.");
+        }
+
+        if (slot == null) {
+            throw new IllegalArgumentException("Parking slot cannot be null.");
+        }
+
+        if (entryTime == null) {
+            throw new IllegalArgumentException("Entry time cannot be null.");
+        }
+
+        this.ticketId = ticketId.trim().toUpperCase();
+        this.vehicle = vehicle;
+        this.slot = slot;
+        this.entryTime = entryTime;
+        this.exitTime = null;
+        this.fee = 0.0;
     }
 
     public String getTicketId() {
-        // TODO
-        return null;
+        return ticketId;
     }
 
     public Vehicle getVehicle() {
-        // TODO
-        return null;
+        return vehicle;
     }
 
     public ParkingSlot getSlot() {
-        // TODO
-        return null;
+        return slot;
     }
 
     public LocalDateTime getEntryTime() {
-        // TODO
-        return null;
+        return entryTime;
     }
 
     /** Null while the vehicle is still parked. */
     public LocalDateTime getExitTime() {
-        // TODO
-        return null;
+        return exitTime;
     }
 
     /** 0 while the vehicle is still parked. */
     public double getFee() {
-        // TODO
-        return 0;
+        return fee;
     }
 
     /** True until the ticket is closed. */
     public boolean isActive() {
-        // TODO
-        return false;
+        return exitTime == null;
     }
 
     /**
@@ -54,6 +74,25 @@ public class Ticket {
      * Rule: if the ticket is already closed -> throw IllegalStateException.
      */
     public void close(LocalDateTime exitTime, double fee) {
-        // TODO: write this method
+        if (!isActive()) {
+            throw new IllegalStateException(
+                    "This ticket has already been closed."
+            );
+        }
+
+        if (exitTime == null || exitTime.isBefore(entryTime)) {
+            throw new IllegalArgumentException(
+                    "Invalid exit time."
+            );
+        }
+
+        if (!Double.isFinite(fee) || fee < 0) {
+            throw new IllegalArgumentException(
+                    "Invalid parking fee."
+            );
+        }
+
+        this.exitTime = exitTime;
+        this.fee = fee;
     }
 }

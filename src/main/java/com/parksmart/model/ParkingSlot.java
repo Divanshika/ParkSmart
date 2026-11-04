@@ -3,7 +3,9 @@ package com.parksmart.model;
 /** One parking space. It can hold one vehicle at a time. */
 public class ParkingSlot {
 
-    // TODO: add the private fields a slot needs.
+    private String slotId;
+    private SlotType slotType;
+    private Vehicle parkedVehicle;
 
     /**
      * Creates an empty slot.
@@ -11,29 +13,40 @@ public class ParkingSlot {
      *        Save the slot ID in capital letters.
      */
     public ParkingSlot(String slotId, SlotType slotType) {
-        // TODO: write this constructor
+        if (slotId == null || slotId.trim().isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Slot ID cannot be empty."
+            );
+        }
+
+        if (slotType == null) {
+            throw new IllegalArgumentException(
+                    "Slot type cannot be null."
+            );
+        }
+
+        this.slotId = slotId.trim().toUpperCase();
+        this.slotType = slotType;
+
+        this.parkedVehicle = null;
     }
 
     public String getSlotId() {
-        // TODO
-        return null;
+        return slotId;
     }
 
     public SlotType getSlotType() {
-        // TODO
-        return null;
+        return slotType;
     }
 
     /** True when no vehicle is parked here. */
     public boolean isAvailable() {
-        // TODO
-        return false;
+        return parkedVehicle == null;
     }
 
     /** The vehicle parked here, or null if the slot is free. */
     public Vehicle getParkedVehicle() {
-        // TODO
-        return null;
+        return parkedVehicle;
     }
 
     /**
@@ -41,12 +54,37 @@ public class ParkingSlot {
      * Rule: if the slot is already taken -> throw IllegalStateException.
      */
     public void park(Vehicle vehicle) {
-        // TODO: write this method
+        if (vehicle == null) {
+            throw new IllegalArgumentException(
+                    "Vehicle cannot be null."
+            );
+        }
+
+        if (!isAvailable()) {
+            throw new IllegalStateException(
+                    "This parking slot is already occupied."
+            );
+        }
+
+        if (!slotType.canFit(vehicle.getRequiredSlotType())) {
+            throw new IllegalArgumentException(
+                    "This slot is too small for the vehicle."
+            );
+        }
+
+        parkedVehicle = vehicle;
     }
 
     /** Empties the slot and returns the vehicle that was in it. */
     public Vehicle removeVehicle() {
-        // TODO: write this method
-        return null;
+        if (isAvailable()) {
+            return null;
+        }
+
+        Vehicle removedVehicle = parkedVehicle;
+
+        parkedVehicle = null;
+
+        return removedVehicle;
     }
 }

@@ -12,7 +12,10 @@ public enum SlotType {
      * Example: LARGE.canFit(SMALL) is true, SMALL.canFit(LARGE) is false.
      */
     public boolean canFit(SlotType required) {
-        // TODO: write this method
-        return false;
+        if (required == null) {
+            return false;
+        }
+
+        return this.ordinal() >= required.ordinal();
     }
 }

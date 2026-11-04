@@ -12,21 +12,28 @@ public class Van extends Vehicle {
 
     @Override
     public String getType() {
-        // TODO
-        return null;
+        return "Van";
     }
 
     @Override
     public double getHourlyRate() {
-        // TODO
-        return 0;
+        return 150.0;
     }
 
     @Override
     public SlotType getRequiredSlotType() {
-        // TODO
-        return null;
+        return SlotType.LARGE;
     }
 
-    // TODO: the fee for a van is different. Add the method that makes this happen.
+    @Override
+    public double calculateFee(long hours) {
+
+        if (hours < 1) {
+            throw new IllegalArgumentException(
+                    "Parking hours must be at least one hour."
+            );
+        }
+
+        return (hours * getHourlyRate()) + 100.0;
+    }
 }

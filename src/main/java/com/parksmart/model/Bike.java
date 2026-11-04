@@ -9,19 +9,16 @@ public class Bike extends Vehicle {
 
     @Override
     public String getType() {
-        // TODO
-        return null;
+        return "Bike";
     }
 
     @Override
     public double getHourlyRate() {
-        // TODO
-        return 0;
+        return 50.0;
     }
 
     @Override
     public SlotType getRequiredSlotType() {
-        // TODO
-        return null;
+        return SlotType.SMALL;
     }
 }

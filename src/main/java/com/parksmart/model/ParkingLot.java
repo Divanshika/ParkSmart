@@ -1,11 +1,15 @@
 package com.parksmart.model;
 
 import com.parksmart.exception.ParkingException;
+import com.parksmart.exception.ParkingFullException;
 import com.parksmart.exception.TicketNotFoundException;
+import com.parksmart.exception.VehicleAlreadyParkedException;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -13,18 +17,31 @@ import java.util.List;
  * the history of finished tickets and the total earnings.
  */
 public class ParkingLot {
-
-    // TODO: add the private fields the car park needs.
-    //       Choose suitable Java collections (List, Map ...).
+    private String name;
+    private List<ParkingSlot> slots;
+    private List<Ticket> activeTickets;
+    private List<Ticket> completedTickets;
+    private int ticketCounter;
+    private double totalEarnings;
 
     /** Rule: name cannot be empty -> throw IllegalArgumentException. */
     public ParkingLot(String name) {
-        // TODO: write this constructor
+
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Parking lot name cannot be empty.");
+        }
+
+        this.name = name.trim();
+        this.slots = new ArrayList<>();
+        this.activeTickets = new ArrayList<>();
+        this.completedTickets = new ArrayList<>();
+
+        this.ticketCounter = 1001;
+        this.totalEarnings = 0.0;
     }
 
     public String getName() {
-        // TODO
-        return null;
+        return name;
     }
 
     /**
@@ -33,7 +50,17 @@ public class ParkingLot {
      *       -> throw IllegalArgumentException.
      */
     public void addSlot(String slotId, SlotType type) {
-        // TODO: write this method
+        ParkingSlot newSlot = new ParkingSlot(slotId, type);
+        for (ParkingSlot slot : slots) {
+
+            if (slot.getSlotId().equalsIgnoreCase(newSlot.getSlotId())) {
+                throw new IllegalArgumentException(
+                        "A slot with this ID already exists."
+                );
+            }
+        }
+
+        slots.add(newSlot);
     }
 
     /**
@@ -46,8 +73,64 @@ public class ParkingLot {
      *  - Ticket IDs are "T1001", "T1002", "T1003" ...
      */
     public Ticket parkVehicle(Vehicle vehicle, LocalDateTime entryTime) throws ParkingException {
-        // TODO: write this method
-        throw new UnsupportedOperationException("parkVehicle() is not written yet.");
+        if (vehicle == null) {
+            throw new IllegalArgumentException("Vehicle cannot be null.");
+        }
+
+        if (entryTime == null) {
+            throw new IllegalArgumentException("Entry time cannot be null.");
+        }
+
+        // Check whether the same vehicle is already parked.
+        for (Ticket ticket : activeTickets) {
+
+            if (ticket.getVehicle().getPlateNumber().equalsIgnoreCase(vehicle.getPlateNumber())) {
+                throw new VehicleAlreadyParkedException("This vehicle is already parked.");
+            }
+        }
+        ParkingSlot selectedSlot = null;
+
+        for (SlotType size : SlotType.values()) {
+
+            if (size.ordinal() < vehicle.getRequiredSlotType().ordinal()) {
+                continue;
+            }
+
+            for (ParkingSlot slot : slots) {
+
+                if (slot.isAvailable()
+                        && slot.getSlotType() == size
+                        && slot.getSlotType().canFit(
+                        vehicle.getRequiredSlotType())) {
+
+                    selectedSlot = slot;
+                    break;
+                }
+            }
+
+            if (selectedSlot != null) {
+                break;
+            }
+        }
+
+        if (selectedSlot == null) {
+            throw new ParkingFullException("No available parking slot fits this vehicle.");
+        }
+
+        String ticketId = "T" + ticketCounter;
+
+        Ticket ticket = new Ticket(
+                ticketId,
+                vehicle,
+                selectedSlot,
+                entryTime
+        );
+
+        selectedSlot.park(vehicle);
+        activeTickets.add(ticket);
+        ticketCounter++;
+
+        return ticket;
     }
 
     /**
@@ -58,8 +141,37 @@ public class ParkingLot {
      *  - Free the slot, close the ticket, move it to the history, add the fee to the earnings.
      */
     public double exitVehicle(String ticketId, LocalDateTime exitTime) throws TicketNotFoundException {
-        // TODO: write this method
-        throw new UnsupportedOperationException("exitVehicle() is not written yet.");
+        if (ticketId == null || ticketId.trim().isEmpty()) {
+            throw new TicketNotFoundException("Ticket ID cannot be empty.");
+        }
+
+        Ticket selectedTicket = null;
+
+        for (Ticket ticket : activeTickets) {
+
+            if (ticket.getTicketId().equalsIgnoreCase(ticketId.trim())) {
+                selectedTicket = ticket;
+                break;
+            }
+        }
+
+        if (selectedTicket == null) {
+            throw new TicketNotFoundException("Ticket not found or already completed.");
+        }
+
+        long hours = calculateChargedHours(
+                selectedTicket.getEntryTime(),
+                exitTime
+        );
+
+        double fee = selectedTicket.getVehicle().calculateFee(hours);
+        selectedTicket.getSlot().removeVehicle();
+        selectedTicket.close(exitTime, fee);
+        activeTickets.remove(selectedTicket);
+        completedTickets.add(selectedTicket);
+        totalEarnings += fee;
+        return fee;
+
     }
 
     /**
@@ -69,8 +181,17 @@ public class ParkingLot {
      *        Exit time before entry time -> throw IllegalArgumentException.
      */
     public static long calculateChargedHours(LocalDateTime entryTime, LocalDateTime exitTime) {
-        // TODO: write this method
-        throw new UnsupportedOperationException("calculateChargedHours() is not written yet.");
+        if (entryTime == null || exitTime == null) {
+            throw new IllegalArgumentException("Entry time and exit time cannot be null.");
+        }
+        if (exitTime.isBefore(entryTime)) {
+            throw new IllegalArgumentException("Exit time cannot be before entry time.");
+        }
+        Duration duration = Duration.between(entryTime, exitTime);
+
+        long seconds = duration.getSeconds();
+        long hours = (seconds + 3599) / 3600;
+        return Math.max(1, hours);
     }
 
     /**
@@ -78,43 +199,57 @@ public class ParkingLot {
      * Rule: not found -> throw TicketNotFoundException.
      */
     public Ticket findTicketByPlate(String plateNumber) throws TicketNotFoundException {
-        // TODO: write this method
-        throw new UnsupportedOperationException("findTicketByPlate() is not written yet.");
+        if (plateNumber == null || plateNumber.trim().isEmpty()) {
+            throw new TicketNotFoundException("Plate number cannot be empty.");
+        }
+
+        for (Ticket ticket : activeTickets) {
+            if (ticket.getVehicle().getPlateNumber().equalsIgnoreCase(plateNumber.trim())) {
+                return ticket;
+            }
+        }
+
+        throw new TicketNotFoundException("No active ticket found for this plate number.");
     }
 
     /** All slots, in the order they were added. */
     public List<ParkingSlot> getAllSlots() {
-        // TODO
-        return new ArrayList<>();
+        return new ArrayList<>(slots);
     }
 
     /** Only the free slots. */
     public List<ParkingSlot> getAvailableSlots() {
-        // TODO
-        return new ArrayList<>();
+        List<ParkingSlot> available = new ArrayList<>();
+
+        for (ParkingSlot slot : slots) {
+
+            if (slot.isAvailable()) {
+                available.add(slot);
+            }
+        }
+
+        return available;
     }
 
     public int getAvailableSlotCount() {
-        // TODO
-        return 0;
+        return getAvailableSlots().size();
     }
 
     /** Tickets of vehicles that are parked right now. */
     public List<Ticket> getActiveTickets() {
-        // TODO
-        return new ArrayList<>();
+        return new ArrayList<>(activeTickets);
     }
 
     /** Closed tickets, NEWEST exit time first. */
     public List<Ticket> getCompletedTickets() {
-        // TODO
-        return new ArrayList<>();
+        List<Ticket> history = new ArrayList<>(completedTickets);
+        history.sort(Comparator.comparing(Ticket::getExitTime).reversed());
+        return history;
     }
 
     /** Total of all fees paid so far. */
     public double getTotalEarnings() {
-        // TODO
-        return 0;
+        return totalEarnings;
     }
 
     /**

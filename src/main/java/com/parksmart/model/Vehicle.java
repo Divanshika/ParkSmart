@@ -6,8 +6,8 @@ package com.parksmart.model;
  */
 public abstract class Vehicle {
 
-    // TODO: add the private fields a vehicle needs.
-
+    private String plateNumber;
+    private String ownerName;
 
     /**
      * Creates a vehicle.
@@ -15,17 +15,23 @@ public abstract class Vehicle {
      *        Remove extra spaces. Save the plate number in capital letters.
      */
     public Vehicle(String plateNumber, String ownerName) {
-        // TODO: write this constructor
+        if (plateNumber == null || plateNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("Plate number cannot be empty.");
+        }
+        if (ownerName == null || ownerName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Owner name cannot be empty.");
+        }
+        this.plateNumber = plateNumber.trim().toUpperCase();
+
+        this.ownerName = ownerName.trim();
     }
 
     public String getPlateNumber() {
-        // TODO
-        return null;
+        return plateNumber;
     }
 
     public String getOwnerName() {
-        // TODO
-        return null;
+        return ownerName;
     }
 
     /** Returns "Car", "Bike" or "Van". */
@@ -42,8 +48,11 @@ public abstract class Vehicle {
      * Rule: hours less than 1 -> throw IllegalArgumentException.
      */
     public double calculateFee(long hours) {
-        // TODO: write this method
-        return 0;
+        if (hours < 1) {
+            throw new IllegalArgumentException("Hours must be at least 1");
+        }
+
+        return hours * getHourlyRate();
     }
 
     @Override
